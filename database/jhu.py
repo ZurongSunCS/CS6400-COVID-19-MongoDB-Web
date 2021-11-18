@@ -8,15 +8,6 @@ db = client["test"]
 table = db["JHU"]
 
 
-# website_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/01-01-2021.csv"
-# df = pd.read_csv(website_url, header=0)
-# df = df.set_index('Province_State')
-
-# object_df = df.to_dict('index')
-
-# table.insert_one({"_id": "2021-01-01", "data": object_df})
-
-
 
 # start data: 2020-4-12
 
