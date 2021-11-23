@@ -7,3 +7,4 @@
 5. in the env file, type FLASK_APP=app.py FLASK_ENV=development flask run
 6. try ./run
 7. if there is no error. congratulation!
+
