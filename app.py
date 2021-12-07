@@ -4,9 +4,7 @@ import pymongo
 
 app = Flask(__name__)
 app.secret_key = b'\xeeL\xbf\x8ec=\xff\xb0d}\xbc\x91\x94r\xc7L'
-# Database
-#client = pymongo.MongoClient('localhost', 27017)
-#db = client.user_login_system
+
 
 #Routes
 from user import routes
@@ -24,7 +22,7 @@ def login_required(f):
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('HomePage.html')
 
 
 @app.route('/dashboard/')
@@ -32,10 +30,15 @@ def home():
 def dashboard():
     return render_template('dashboard.html')
 
-@app.route('/embeded')
-def embeded():
-    return render_template('index.html')
+@app.route('/Confirmed_Case')
+def Confirmed_Case():
+    return render_template('Confirmed_Case.html')
 
-@app.route('/embeded2')
-def embeded2():
-    return render_template('index2.html')
+@app.route('/Recovered_Case')
+def Recovered_Case():
+    return render_template('Recovered_Case.html')
+
+@app.route('/Death_Case')
+def Death_Case():
+    return render_template('Death_Case.html')
+
