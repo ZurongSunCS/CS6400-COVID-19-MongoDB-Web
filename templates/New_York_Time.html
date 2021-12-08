@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+      <title>New York Times</title>
+      <link rel="stylesheet" href="/static/css/style.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+          body  {
+                background-image: url("https://www.who.int/images/default-source/default-album/cdc-k0krntqcjfw-unsplash6d0dcf07f4a847b39930a9454ed07c9a.tmb-1920v.jpg?sfvrsn=30a5882e_1"); 
+            }
+      </style>
+   </head>
+   <body>
+      <nav>
+         <div class="logo">
+            Data Visualization
+         </div>
+         <input type="checkbox" id="click">
+         <label for="click" class="menu-btn">
+         <i class="fas fa-bars"></i>
+         </label>
+         <ul>
+            <li><a class="active" href="http://localhost:5000">Home</a></li>
+            <li><a href="http://localhost:5000/JHU">Johns Hopkins University</a></li>
+            <li><a href="http://localhost:5000/New_York_Time">New York Times</a></li>
+            <li><a href="http://localhost:5000/1point3acres">1point3acres</a></li>
+            <li><a href="http://localhost:5000/Sources">Sources</a></li>
+         </ul>
+      </nav>
+      <div class="content">
+        Dataset&nbsp2<br>
+         &nbsp&nbsp&nbsp&nbsp   Data published by:&nbsp   New York Times<br>
+         &nbsp&nbsp&nbsp&nbsp   Variable time span:&nbsp	Jan 22, 2020 – Now <br>
+         &nbsp&nbsp&nbsp&nbsp   Link:&nbsp              	https://github.com/nytimes/covid-19-data<br>
+         &nbsp&nbsp&nbsp&nbsp   "An ongoing repository of data on coronavirus cases and deaths in the U.S..
+                                The primary data published are the daily cumulative number of cases and deaths reported in each county and state across the U.S. since the beginning of the pandemic."<br><br>
+        <style>
+            .btns button {
+              background-color: #000000; 
+              border: 1px solid rgb(0, 204, 255); 
+              color: white; 
+              padding: 10px 24px; 
+              cursor: pointer; 
+              width: 17%; 
+              display: block; 
+            }
+
+            .btns button:hover {
+              background-color: #000000;
+            }
+
+            .btns button:not(:last-child) {
+              border-bottom: none; 
+            }
+            .btns {
+               margin: 0;
+               position: relative;
+               top: 78%;
+               left: 40%;
+
+            }
+
+            </style>
+            <body>
+               
+            <div class="btns">
+               <br>
+              <button onClick = "window.location.href = 'http://localhost:5000/New_York_Time_Confirmed_Case';">Confirmed Case Dashboard</button>
+              <br>
+              <button onClick = "window.location.href = '';">Death Case Dashboard</button>
+              <br>
+            </div>
+            
+            </body>
+      </div>
+      
+   </body>
+</html>
