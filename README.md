@@ -28,4 +28,4 @@ Run the application:
 
 Go to localhost:5000
 
-We have 9 dashboards which contain 22 graphs. There are line graph, bar graph, the combination of line graph and bar graph, map graph and treemaps. The user can check confirmed_cases, death_cases, recovery_cases, # of people who are tested, Mortality and etc.
+We have 9 dashboards which contain 22 graphs. There are line graph, bar graph, the combination of line graph and bar graph, map graph and treemaps. The user can check confirmed_cases, death_cases, recovery_cases, # of people who are tested, Mortality and etc in USA.
