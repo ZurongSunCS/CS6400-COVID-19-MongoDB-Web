@@ -44,7 +44,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV='/Users/zeilren/Desktop/CS6400-COVID-19-MongoDB-Web/env'
+VIRTUAL_ENV='/Users/zeilren/Desktop/CS6400/CS6400-COVID-19-MongoDB-Web/env'
 if ([ "$OSTYPE" = "cygwin" ] || [ "$OSTYPE" = "msys" ]) && $(command -v cygpath &> /dev/null) ; then
     VIRTUAL_ENV=$(cygpath -u "$VIRTUAL_ENV")
 fi

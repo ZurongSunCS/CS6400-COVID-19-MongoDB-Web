@@ -1,11 +1,8 @@
 # CS6400-COVID-19-MongoDB-Web
-#SET UP STEP
-1. On the directory, open terminal
-2. type: virtualenv -p python3 env in terminal
-3. type: source env/bin/activate in terminal
-4. create a env file
-5. in the env file, type FLASK_APP=app.py FLASK_ENV=development flask run
-6. try ./run
-7. if there is no error. congratulation!
 
-Last Commit: Edit Front-End to include Tableau data visualization.
+#SET UP STEP
+
+1. To run the separate D3 file, in the terminal type "cd covid", and then "python3 -m http.server 8005 &"
+2. To run our application, in the root terminal, type "virtualenv -p python3 env"
+3. Then type "source env/bin/activate"
+4. Finally type "./run" to run our application
