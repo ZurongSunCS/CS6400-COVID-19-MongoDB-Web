@@ -1,4 +1,8 @@
 # CS6400-COVID-19-MongoDB-Web
+In order to successfully deploy this application, you have to install many library.
+pip install flask pymongo passlib numpy
+
+
 
 #SET UP STEP
 
