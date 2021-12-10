@@ -1,0 +1,2 @@
+COMMAND     PID    USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+python3.8 89121 zeilren    5u  IPv6 0x18864139afb94f1f      0t0  TCP *:8005 (LISTEN)

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <!-- add title -->
+    
+    <!-- import required libraries here -->
+    
+    <style>
+        /* define CSS rules here */
+    .tooltip {
+  position: relative;
+  display: inline-block;
+        border:1px solid #000;
+}
+        .tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: white;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;}
+.legend {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  padding: 0 5px;
+  background: white;
+}
+
+    </style>
+
+    <title></title>
+    <meta charset="utf-8">
+
+ <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
+<script type="text/javascript" src="../lib/d3-dsv.min.js"></script>
+<script type="text/javascript" src="../lib/d3-geo-projection.v2.min.js"></script>
+<script type="text/javascript" src="../lib/topojson.v2.min.js"></script>
+<script type="text/javascript" src="../lib/d3-legend.min.js"></script>
+<script type="text/javascript" src="../lib/d3-tip.min.js"></script>
+
+
+
+</head>
+
+
+<body>
+    <!-- Add heading for the visualization -->
+
+    <!-- Create dropdown element here. Options should be added after reading in game file, they should not be created here.-->
+     <select id="dateDropdown"></select>
+    <!-- append visualization svg to this div-->
+    <div id="choropleth" style="display: flex;
+  align-items: center;
+  justify-content: center;"></div>
+    <div id="lineplot" style="display: inline;"></div>
+    <div id="barplot" style="display: flex;
+  align-items: center;
+  justify-content: center;"></div>
+
+    <script>
+    
+        // enter code to define margin and dimensions for svg
+        var w = 1200;
+        var h = 600;
+        var padding = 30;
+        var data, xScale, yScale;  //Empty, for now
+            var barpadding = 2;
+            // define function to parse time in years format
+        var timeConv = d3.timeParse("%Y-%m-%d");
+	// !! year running_total's data format?? what type to what type?
+        var formatTime = d3.timeFormat("%Y-%m-%d");
+        //var margin = 10px;
+
+        // enter code to create svg
+        var svg = d3.select("body").select("#choropleth")
+            .append("svg")
+            //.attr("id", "countries")
+            .attr("width", w)
+            .attr("height", h);
+                 var svg_l = d3.select("body").select("#lineplot")
+            .append("svg")
+            .attr("width", 100)
+            .attr("height", 50)
+             .attr("id","svg-l")
+             ;
+        var svg_b = d3.select("body").select("#barplot")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", 700)
+             .attr("id","svg-b")
+             ;
+
+
+        var colorScheme = ["#fee5d9","#fcae91","#fb6a4a","#cb181d"]
+        // enter code to create color scale
+        var colorScale = d3.scaleQuantile()
+        //.domain(game)
+        .range(["#fee5d9","#fcae91","#fb6a4a","#cb181d"]);
+
+        // enter code to define tooltip
+        var tip = d3.tip().attr("id","tooltip").attr('class', 'd3-tip').html(function(d) { return d; });
+
+        // enter code to define projection and path required for Choropleth
+        // For grading, set the name of functions for projection and path as "projection" and "path"
+       var projection = d3.geoNaturalEarth().translate([w/2+900, h/2+500]).scale([700])//.translate([2*w-360 , 2*h ])
+
+        var path = d3.geoPath().projection(projection);
+
+
+        // define any other global variables 
+        var map = d3.json("us-states.json");
+        var covid = d3.csv("us-cases.csv");
+        var final = [];
+        /*d3.dsv(",", "ratings-by-country.csv", function (d) {
+            return {
+            // format data attributes if required
+            Game: d.Game,
+            country: d.country,
+            average_rating: Math.floor(d.average_rating),
+            users_rated: parseInt(d.users_rated)
+        }
+        }).then(function (data) {
+            console.log(data);
+        })*/
+
+        Promise.all([
+            // enter code to read files
+           map,covid
+            
+        ]).then(
+            // enter code to call ready() with required arguments
+            function(values) {
+                ready(false, values[0], values[1])
+            }
+        );
+        
+        // this function should be called once the data from files have been read
+        // states: topojson from us-states.json
+        // covidData: data from us-cases.csv
+        
+        function ready(error, states, covidData) {
+            if (error) throw error;
+            // enter code to extract all unique date from covidData
+            console.log("some",covidData);
+            console.log("some2",states);
+            final = d3.nest() // groupby date?
+                    //.key(function (d) { return d.confirmed_date; })
+                    .key(function (d) { return d.confirmed_date; })
+                    .entries(covidData);
+            console.log("final",final);
+            //console.log("selections",final[0].values[0]["Average Rating"])
+            var date_options = [];
+            for (var i = 0; i < final.length; i++){
+                date_options.push(final[i].key)
+            }
+            date_options.sort()
+
+
+            // enter code to append the game options to the dropdown
+            d3.select("#dateDropdown")
+            .selectAll("option")
+     	    .data(date_options)
+            .enter()
+    	    .append("option")
+            //.text(function (d) { return d3.timeFormat(d); }) // text showed in the menu
+                .text(function (d) { return d; })
+            .attr("value", function (d) { return d; }) // corresponding value returned by the button*/
+            
+            // event listener for the dropdown. Update choropleth and legend when selection changes. Call createMapAndLegend() with required arguments.
+            d3.select("#dateDropdown").on("change", function(d) {
+            // recover the option that has been chosen
+                var selectedOption = d3.select(this).property("value")
+                //console.log("selectdate", d3.timeFormat(selectedOption))
+            // run the updateChart function with this selected option
+                var selectedDate = []
+                for (var i = 0; i<final.length; i++){
+                    if (final[i].key == selectedOption){
+                        selectedDate=final[i].values
+                    }
+                }
+                //console.log("selected", selectedGame);
+                createMapAndLegend(states, covidData, selectedDate);
+                build_bar(states, covidData, selectedDate);
+            })
+
+            // create Choropleth with default option. Call createMapAndLegend() with required arguments.
+            createMapAndLegend(states, covidData, final[0].values);
+            build_bar(states, covidData, final[0].values);
+        }
+
+        // this function should create a Choropleth and legend using the states and covidData arguments for a selectedGame
+        // also use this function to update Choropleth and legend when a different date is selected from the dropdown
+        function createMapAndLegend(states, covidData, selectedDate){
+         // draw map;
+        svg.selectAll("*").remove();
+        // manage colorscale
+            console.log("selected", selectedDate);
+            console.log("world", states.features);
+
+            /* var ratings = []
+            for (var i = 0; i < selectedDate.length; i++){
+                ratings.push(+selectedDate[i]["Average Rating"])
+            }*/
+            //console.log(ratings)
+            var new_set = d3.nest() // groupby date?
+                    .key(function (d) { return d.state_name; })
+                    .entries(selectedDate);
+            var confirmed_cases = []
+
+            for (var i = 0; i < new_set.length; i++){
+                var total_count = 0
+                for (var j = 0; j < new_set.values.length; j++)
+                    var temp = 0
+                    temp = +new_set[i].values[j].confirmed_count
+                    total_count = total_count + temp
+
+
+          //new_set[i][casecount]=total_count
+                if (total_count >= 0 && total_count <20000) {
+                    confirmed_cases.push({key: new_set[i].key, values: total_count})
+                }
+             }
+            var case_range = []
+            for (var i = 0; i < confirmed_cases.length; i++){
+                case_range.push(+confirmed_cases[i].values)
+            }
+            colorScale.domain(case_range)
+
+        // call tootip
+           svg.call(tip)
+        var passed_item = []
+        svg.append("g").attr("id", "states").selectAll("path")
+        .data(states.features)
+        .enter()
+        .append("path")
+        .attr("class","continent")
+            .attr("fill", function (d){
+                // Pull data for this country
+                //console.log("test", confirmed_cases)
+                passed_item = d
+                var cases = 0;
+                for (var i = 0; i < confirmed_cases.length; i++){
+                    //console.log("debug",confirmed_cases[i].key)
+                    if (confirmed_cases[i].key == d.properties.name){
+                        cases = +confirmed_cases[i].values;
+                    }
+                }
+
+                // Set the color
+                if (cases == 0) {
+                    //console.log("ERRO", "WOOPS")
+                    return "grey"
+                } else {
+                    //console.log("current_case", cases)
+                    return colorScale(cases);}
+
+            })
+        .attr("d", path)
+            //.on('mouseover', build_line(passed_item, states, covidData, selectedDate))
+              .on('mouseover', function(d){
+                    // passed text
+                    var cases = 0;
+                    //var num_u = 0;
+                    //var game_n;
+                    var c_name =  d.properties.name;
+                    for (var i = 0; i < confirmed_cases.length; i++){
+                        if (confirmed_cases[i].key == d.properties.name){
+                            cases = +confirmed_cases[i].values;
+                        }
+                    }
+
+                  var xPosition = parseFloat(d3.select(this).attr("x"))-30;
+                  var yPosition =  parseFloat(d3.select(this).attr("y"))-100;
+                  tip
+                      .html("<p class='tooltip'>State: " + d.properties.name +
+                          "<br><br>Confirmed Cases: " + cases+ "<br></p>")
+                      .style("left", xPosition + "px")
+                      .style("top", yPosition + "px")
+                      .show()
+
+              })
+    .on('mouseout', aftermove)
+
+           var g = svg.append("g").attr("id","legend")
+        .attr("class", "legendQuant")
+        .attr("transform", "translate(800,20)");
+
+        var labels = [];
+        case_range = case_range.sort(function(a, b){return a-b;});
+        for (var i = 0; i < 4; i++){
+            var qua = Math.floor(case_range.length*0.25*i)
+            var qua2 = Math.floor(case_range.length*0.25*(i+1))
+            var start = d3.format(",.2f")(case_range[qua])
+            var end = d3.format(",.2f")(case_range[qua2])
+            if (i == 3) {
+                end = d3.format(",.2f")(case_range[case_range.length-1])
+            }
+            labels.push(start + " to " + end);
+        }
+       //console.log(ratings)
+            //console.log(labels)
+        var legend = d3.legendColor(function (d) { return colorScheme[d.i]; })
+            .labels(function (d) { return labels[d.i]; })
+            //.shapePadding(4)
+        .scale(colorScale);
+
+        svg.select(".legendQuant")
+        .call(legend);
+        }
+           // building bar chart
+  function build_bar(states, covidData, selectedDate) {
+    svg_b.selectAll("*").remove();
+    // prepare dataset
+      new_set = d3.nest() // groupby date?
+                    //.key(function (d) { return d.confirmed_date; })
+                    .key(function (d) { return d.state_name; })
+                    .entries(selectedDate);
+      new_set1 = []
+      console.log("test0",new_set[0]);
+      for (var i = 0; i < new_set.length; i++){
+          var total_count = 0
+          for (var j = 0; j < new_set.values.length; j++)
+            var temp = 0
+            temp = +new_set[i].values[j].confirmed_count
+            total_count = total_count + temp
+          //new_set[i][casecount]=total_count
+          if (total_count >= 0 && total_count <20000) {
+              new_set1.push({key: new_set[i].key, case_count: total_count})
+          }
+      }
+
+      var midsort = new_set1.sort(function(a, b) {
+          return d3.descending(a.case_count, b.case_count);
+      })
+     console.log("new_set1",midsort);
+      var display_amount = 10;
+      if (midsort.length < 10){
+        display_amount = midsort.length;
+      }
+      var final_bar = []
+      for (var i = 0; i < display_amount; i++){
+        final_bar.push(new_set1[i])
+      }
+      console.log("new_set2",final_bar);
+
+      // build bar chart
+      if (final_bar.length > 0) {
+        // axis
+            /* new_set.sort(function(a, b) {
+					   return d3.ascending(a.num_user, b.num_user);
+				   	})*/
+      //console.log(new_set);
+          var yScale1 = d3.scaleBand()
+                  .domain(final_bar.map((d) => d.key))
+                  .range ([2*padding, h-3*padding])
+                  .padding(1.2)
+
+            var xScale1 = d3.scaleLinear().domain([0, d3.max(final_bar,function(c) {
+                        return c.case_count;
+                      })] // key is rate here
+                      ).range ([0, w]);
+
+          const yaxis1 = d3.axisLeft()
+          .ticks()
+          .scale(yScale1);
+
+          const xaxis1 = d3.axisBottom()
+          //.ticks().tickSize(-h)
+          .scale(xScale1);
+
+          // draw rect
+         //var years = d.other[0].year.getFullYear() - 2015 // error may appear
+          svg_b.append("g").attr("id", "bars").selectAll("rect")
+        .data(final_bar)
+        .enter()
+        .append('rect')
+                  .attr("y", function (d) {
+                    return yScale1(d.key);
+                })
+                //.attr("height", yScale1.bandwidth())
+                .attr("height", 25)
+                .attr("x", 80)
+                .attr("width", function (d) {
+                    return xScale1(d.case_count);
+                })
+               .attr("fill", "#fb6a4a")
+                //.attr("transform", "translate(" + (padding-30) +","+(-35)+")")
+               .attr("transform", "translate(" + (padding-30) +","+(-80)+")")
+                  ;
+
+          // draw axis
+           svg_b.append("g")
+          .attr("id", "x-axis-bars")
+          .attr("class", "axis")
+          //.attr("transform", "translate(" + (padding-30) +","+(h-padding+50)+")")
+               .attr("transform", "translate(" + 80 +","+(440)+")")
+          .call(xaxis1);
+
+          svg_b.append("g")
+          .attr("id", "y-axis-bars")
+          .attr("class", "axis")
+          //.attr("transform", "translate(" + (padding-30) + ","+(-35)+")")
+              .attr("transform", "translate(" + 80 + ","+(-70)+")")
+          .call(yaxis1);
+
+          // append title
+            svg_b.append("g").attr("id", "bar_chart_title").append("text")
+                    .text("Top Ten States With Highest Confirmed Case")
+             .attr("x", w/2)
+              .attr("y", 14);
+
+              svg_b.append("g").attr("id", "bar_x_axis_label").append("text")
+              .attr("class", "x label")
+              .attr("text-anchor", "end")
+            .attr("x", w/2+padding/2)
+              .attr("y", h-100)
+            .text("Confirmed Cases");
+
+              svg_b.append("g").attr("id","bar_y_axis_label").append("text")
+              .attr("class", "y label")
+              .attr("text-anchor", "end")
+              .attr("x", -h/2+padding)
+                      .attr("y", 5)
+              .attr("dy", ".3em")
+              .attr("transform", "rotate(-90)")
+                      .text("States");
+      } else {
+        svg_b.append("g").attr("id", "bars").style("display","none");
+        svg_b.append("g").attr("id", "x-axis-bars").style("display","none");
+        svg_b.append("g").attr("id", "y-axis-bars").style("display","none");
+        svg_b.append("g").attr("id", "bar_chart_title").style("display","none");
+        svg_b.append("g").attr("id","bar_x_axis_label").style("display","none");
+        svg_b.append("g").attr("id","bar_y_axis_label").style("display","none");
+      }
+
+      // circle manag d3.select(this).attr("r", 13);
+  }
+
+  function build_line(d,states, covidData, selectedDate){
+            // make dataset
+      console.log("passed_item", d)
+                        var new_set = d3.nest() // groupby date?
+                    .key(function (d) { return d.state_name; })
+                    .entries(selectedDate);
+            var confirmed_cases = []
+
+            for (var i = 0; i < new_set.length; i++){
+                var total_count = 0
+                for (var j = 0; j < new_set.values.length; j++)
+                    var temp = 0
+                    temp = +new_set[i].values[j].confirmed_count
+                    total_count = total_count + temp
+          //new_set[i][casecount]=total_count
+                if (total_count >= 0 && total_count <20000) {
+                    confirmed_cases.push({key: new_set[i].key, values: total_count})
+                }
+             }
+               var final = d3.nest() // groupby date?
+                    //.key(function (d) { return d.confirmed_date; })
+                    .key(function (d) { return d.confirmed_date; })
+                    .entries(covidData);
+               var index = 0
+               for (var i = 0; i< final.length; i++){
+                    if (final[i].key == selectedDate[0].confirmed_date){
+                        index = i
+                    }
+                }
+                // read recent 7 days line in that state
+                var line_data = []
+                if(index >= 6){
+                    for (var i = index-6; i <= index; i++){
+                        var date_data, state_data = []
+                        date_data = final[i].values
+                        state_data = d3.nest() // groupby date?
+                        .key(function (c) { return c.state_name; })
+                        .entries(date_data);
+
+                        for (var j = 0; j < state_data.length; j++){
+                            var total_count = 0
+                            if (state_data[j].key == d.properties.name) {
+
+
+                                for (var k = 0; k < state_data.values.length; k++)
+                                     var temp = 0
+                                    temp = +state_data[j].values[k].confirmed_count
+                                    total_count = total_count + temp
+                                if (total_count >= 0 && total_count < 20000) {
+                                    line_data.push({date: final[i].key, count: total_count})
+                                }
+                            }
+                        }
+                    }
+                }
+
+           // build line graph
+          var xScale = d3.scaleBand()
+                  .domain(line_data.map((d) => d.date))
+                  .range ([30, 200])
+                  .padding(1.2)
+
+            var yScale = d3.scaleLinear().domain([0, d3.max(line_data,function(c) {
+                        return c.count;
+                      })] // key is rate here
+                      ).range ([100, 0]);
+
+        const yaxis = d3.axisLeft()
+
+        .scale(yScale);
+
+        const xaxis = d3.axisBottom()
+
+        .scale(xScale);
+      console.log("whooooooo")
+
+       svg_l.append("g").attr("id", "lines").selectAll("path")
+        .append('path')
+            .data(line_data)
+        .enter()
+                 .attr("d", d3.line()
+        .x(function(d) { return xScale(d.date); })
+        .y(function(d) { return yScale(d.count); })
+        )
+ console.log("assssssss")
+      svg_l.select("#lines").append("g")
+        .attr("id", "x-axis-a")
+    .attr("class", "axis")
+    .attr("transform", "translate(" + padding +"," + (h - padding) + ")")
+    .call(xaxis);
+
+svg_l.select("#lines").append("g").attr("id", "y-axis-a")
+    .attr("class", "axis")
+        .attr("transform", "translate(" + padding + ",0)")
+    .call(yaxis);
+
+            // build tooltip
+                        // passed text
+                    var cases = 0;
+                    //var num_u = 0;
+                    //var game_n;
+                    var c_name =  d.properties.name;
+                    for (var i = 0; i < confirmed_cases.length; i++){
+                        if (confirmed_cases[i].key == d.properties.name){
+                            cases = +confirmed_cases[i].values;
+                        }
+                    }
+
+                  //var xPosition = parseFloat(d.attr("x"))-30;
+                  //var yPosition =  parseFloat(d.attr("y"))-100;
+                  //tip
+                      //.html("<p class='tooltip'>State: " + d.properties.name +
+                          //"<br><br>Confirmed Cases: " + cases+ "<br></p>")
+                      //.style("left", xPosition + "px")
+                      //.style("top", yPosition + "px")
+                      //.show()
+
+             // build line chart
+  }
+
+  function aftermove(d){
+            //tip.hide
+          // circle manag d3.select(this).attr("r", 5); svg2.selectAll("*").remove();
+      svg_l.selectAll("*").remove()
+  }
+    </script>
+
+</body>
+
+</html>
