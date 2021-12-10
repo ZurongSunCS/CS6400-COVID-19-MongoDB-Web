@@ -4,11 +4,17 @@ For out project, we use Ubuntu 20.04 and Visual Studio Code.
 In order to successfully deploy this application, you have to do the following.
 
 sudo apt update
+
 sudo apt install python3-pip
+
 sudo apt install python3-virtualenv
+
 pip install flask pymongo passlib numpy pandas
+
 sudo apt install python3-flask
+
 sudo apt-get install python-dnspython
+
 pip3 install pymongo[srv]
 
 #SET UP STEP
