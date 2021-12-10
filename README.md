@@ -20,6 +20,7 @@ sudo apt-get install python-dnspython
 
 pip3 install pymongo[srv]
 
+Run the application: 
 1. To run the separate D3 file, in the terminal type "cd covid", and then "python3 -m http.server 8005 &". This allows you to access D3 graph in the New York Time pages
 2. To run our application, in the root terminal, type "virtualenv -p python3 env" (This may be not necessary)
 3. Then type "source env/bin/activate"
